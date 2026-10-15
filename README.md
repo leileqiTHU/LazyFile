@@ -35,7 +35,9 @@ View workspace files and read-only observation files together, or filter by sour
 
 Describe what you remember or ask a question about a selected file. The assistant can combine search, folder browsing and reading to check the answer. Send files into the workspace from the attachment controls; the sidebar shows library status, observation folders and the optional autonomous organization setting.
 
-![Agent Chat with real analysis of demonstration files and a library overview](docs/assets/lazyfile-assistant.png)
+The example below shows a real lookup: “Find the approved Q4 marketing budget and confirm the total.” The assistant answers with the amount and a file card you can open.
+
+![Agent Chat showing a user lookup question, the assistant's answer and the matching budget file](docs/assets/lazyfile-assistant.png)
 
 ### Recent Activity — see what happened
 

@@ -1,5 +1,6 @@
 // Capture the real desktop UI with synthetic files, never a personal library.
 // Pass --analyze to use the connected Codex account for real demo topics and summaries.
+// --chat-only sends a real lookup question and replaces only the assistant screenshot.
 import {_electron as electron} from '@playwright/test';
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -54,6 +55,25 @@ try{
  const page=await app.firstWindow();await page.waitForSelector('.file-row');
  await fs.mkdir('docs/assets',{recursive:true});
  const capture=async name=>{await page.mouse.move(20,20);await page.screenshot({path:`docs/assets/lazyfile-${name}.png`,animations:'disabled'});};
+ if(process.argv.includes('--chat-only')){
+  await page.locator('.sidebar nav').getByRole('button',{name:'Agent Chat',exact:true}).click();
+  const before=await page.locator('.message.assistant').count();
+  const question='Find the approved Q4 marketing budget and confirm the total. Keep the answer brief and include the file.';
+  await page.locator('.composer textarea').fill(question);
+  await page.getByRole('button',{name:'Send message',exact:true}).click();
+  await page.locator('.message.user').last().waitFor();
+  await page.waitForFunction(count=>document.querySelectorAll('.message.assistant').length>count,before,{timeout:240000});
+  await page.locator('.thinking').waitFor({state:'hidden',timeout:30000});
+  const reply=page.locator('.message.assistant').last();
+  await reply.locator('.result-card').filter({hasText:'Q4 marketing budget.md'}).waitFor();
+  const user=page.locator('.message.user').last();
+  await user.evaluate(el=>{const scroller=el.closest('.chat-scroll');scroller.scrollTo({top:el.offsetTop-scroller.offsetTop-20,behavior:'instant'});});
+  // Ensure the complete exchange and file result fit in the visible conversation pane.
+  for(const item of [user,reply]){
+   if(!await item.evaluate(el=>{const a=el.getBoundingClientRect(),b=el.closest('.chat-scroll').getBoundingClientRect();return a.top>=b.top&&a.bottom<=b.bottom;}))throw new Error('Conversation does not fit; adjust the screenshot framing.');
+  }
+  await capture('assistant');console.log('Saved real question, answer and file result.');
+ }else{
  await page.locator('.file-row').filter({hasText:'Q4 marketing budget.md'}).click();
  await page.locator('.inspector h3').filter({hasText:'Q4 marketing budget.md'}).waitFor();
  await capture('files');
@@ -70,4 +90,5 @@ try{
  await page.locator('.search-input-row .spin').waitFor({state:'hidden',timeout:120000});await page.getByRole('option',{name:/Q4 marketing budget/}).click();await page.locator('.search-preview .excerpt').waitFor({timeout:30000});
  await fs.mkdir('docs/assets',{recursive:true});await page.mouse.move(20,20);await page.screenshot({path:'docs/assets/lazyfile-search.png',animations:'disabled'});
  console.log('Saved docs/assets/lazyfile-search.png (real UI, synthetic demo library).');
+ }
 }finally{await app.close();}
