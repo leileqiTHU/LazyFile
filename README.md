@@ -23,7 +23,7 @@ The assistant can move between search results, folder guides and file contents. 
 
 ## A tour of LazyFile
 
-These screenshots show the real desktop app with a separate demonstration library. The assistant is on its welcome screen, and Collections shows its initial state before AI analysis.
+These screenshots show the real desktop app with a separate demonstration library. The topics, summaries and assistant messages come from actual AI analysis of the sample files.
 
 ### Files — browse your library
 
@@ -35,7 +35,7 @@ View workspace files and read-only observation files together, or filter by sour
 
 Describe what you remember or ask a question about a selected file. The assistant can combine search, folder browsing and reading to check the answer. Send files into the workspace from the attachment controls; the sidebar shows library status, observation folders and the optional autonomous organization setting.
 
-![Agent Chat welcome screen with file attachments and library overview](docs/assets/lazyfile-assistant.png)
+![Agent Chat with real analysis of demonstration files and a library overview](docs/assets/lazyfile-assistant.png)
 
 ### Recent Activity — see what happened
 
@@ -45,9 +45,9 @@ Review imports, file understanding and workspace operations in one timeline. Eli
 
 ### Collections — browse by topic
 
-After AI understanding assigns topics, files with the same topic appear together in a collection. Open a collection to browse its files. Collections are a view of file metadata, so viewing one does not move files. Until files have been analyzed, this page shows the starting prompt below.
+After AI understanding assigns topics, files with the same topic appear together in a collection. Open a collection to browse its files. Collections are a view of file metadata, so viewing one does not move files. Here, the budget, travel and website samples have been analyzed to create real topic collections.
 
-![Collections initial state before files have been analyzed](docs/assets/lazyfile-collections.png)
+![Collections generated from AI analysis of budget, travel and website samples](docs/assets/lazyfile-collections.png)
 
 ### Settings — choose connections and folder access
 
