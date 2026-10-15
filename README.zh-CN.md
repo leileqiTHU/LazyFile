@@ -90,9 +90,9 @@ LazyFile 只有两种用户文件夹：
 
 LazyFile **0.3 目前是早期预览版**，面向 64 位 Windows 10/11。macOS 是目标平台，尚未完成 Mac 实机验证。界面支持英文和简体中文。
 
-[**下载 Windows 安装包**](https://github.com/leileqiTHU/LazyFile/releases/download/v0.3.0/LazyFile-0.3.0-windows-x64-setup.exe) · [版本说明与校验值](https://github.com/leileqiTHU/LazyFile/releases/tag/v0.3.0)
+[**下载 Windows 安装包**](https://github.com/leileqiTHU/LazyFile/releases/download/v0.3.1/LazyFile-0.3.1-windows-x64-setup.exe) · [版本说明与校验值](https://github.com/leileqiTHU/LazyFile/releases/tag/v0.3.1)
 
-安装包内置搜索引擎与 Codex，无需另装工具、运行命令或手动下载模型。为当前 Windows 用户安装，选择安装目录后打开 LazyFile 即可。预览版尚未进行代码签名，Windows 可能显示未知发布者提示。
+安装包内置搜索引擎与独立运行的 Codex app-server 引擎。请在 LazyFile 内单独登录 ChatGPT，不会复用或修改已有 Codex 的配置和登录状态。从 0.3.0 升级后需要重新登录，文件库保持不变。无需另装工具、运行命令或手动下载模型。为当前 Windows 用户安装，选择安装目录后打开 LazyFile 即可。预览版尚未进行代码签名，Windows 可能显示未知发布者提示。
 
 启动应用后：
 

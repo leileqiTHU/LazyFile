@@ -16,8 +16,14 @@ export async function findCodex(configured='') {
   for(const p of ['/opt/homebrew/bin/codex','/usr/local/bin/codex',path.join(os.homedir(),'.local','bin','codex')]){try{await fs.access(p);return p;}catch{}}
   throw new Error('Codex CLI not found. Install Codex or choose its executable in Settings.');
 }
+export function codexEnvironment(home, source=process.env){
+  const env={...source};
+  for(const name of Object.keys(env))if(/^(CODEX_|OPENAI_)/i.test(name)||['ELECTRON_RUN_AS_NODE','NODE_OPTIONS'].includes(name.toUpperCase()))delete env[name];
+  env.CODEX_HOME=home;
+  return env;
+}
 export class Codex extends EventEmitter {
-  constructor({cwd,executable='',home}={}) {super();this.cwd=cwd;this.executable=executable;this.home=home;this.seq=0;this.pending=new Map();this.runs=new Map();}
+  constructor({cwd,executable='',home}={}) {super();this.cwd=cwd;this.executable=executable;this.home=home||path.join(cwd,'CodexHome');this.seq=0;this.pending=new Map();this.runs=new Map();}
   async start() {
     if(this.ready)return this.ready;
     this.ready=this.boot().catch(e=>{this.child?.kill();this.ready=null;throw e;});return this.ready;
@@ -25,19 +31,16 @@ export class Codex extends EventEmitter {
   async boot() {
     await fs.mkdir(this.cwd,{recursive:true});const executable=await findCodex(this.executable);
     const args=['app-server','--listen','stdio://','-c','features.shell_tool=false','-c','features.apps=false','-c','features.multi_agent=false','-c','web_search="disabled"'];
-    // Keep authentication under Codex's own credential management. Disable inherited MCP servers.
-    const home=this.home||process.env.CODEX_HOME||path.join(os.homedir(),'.codex');
-    try {const config=await fs.readFile(path.join(home,'config.toml'),'utf8'); for(const m of config.matchAll(/^\[mcp_servers\.([A-Za-z0-9_-]+)\]/gm))args.push('-c',`mcp_servers.${m[1]}.enabled=false`);}catch{}
-    const env={...process.env};
-    // A standalone app must not inherit the host coding chat's workspace routing or IPC identity.
-    for(const name of Object.keys(env))if(name.startsWith('CODEX_')&&name!=='CODEX_HOME')delete env[name];
-    if(this.home)env.CODEX_HOME=this.home;delete env.ELECTRON_RUN_AS_NODE;delete env.NODE_OPTIONS;
+    // Only LazyFile's private home is read or written. Never migrate host credentials.
+    await fs.mkdir(this.home,{recursive:true,mode:0o700});
+    args.push('-c','cli_auth_credentials_store="file"','-c','check_for_update_on_startup=false');
+    const env=codexEnvironment(this.home);
     this.child=spawn(executable,args,{cwd:this.cwd,env,stdio:['pipe','pipe','pipe'],windowsHide:true});
     this.child.stdin.on('error',()=>{});
     this.child.stderr.on('data',()=>{});
     createInterface({input:this.child.stdout}).on('line',line=>{try{this.receive(JSON.parse(line));}catch{}});
     this.child.on('error',e=>this.fail(e));this.child.on('exit',()=>{this.ready=null;this.fail(new Error('Codex disconnected. Reconnect in Settings.'));});
-    await this.request('initialize',{clientInfo:{name:'lazyfile',title:'LazyFile',version:'0.3.0'},capabilities:{experimentalApi:true}},30000);
+    await this.request('initialize',{clientInfo:{name:'lazyfile',title:'LazyFile',version:'0.3.1'},capabilities:{experimentalApi:true}},30000);
     this.send({method:'initialized',params:{}});
   }
   send(msg){this.child?.stdin.write(JSON.stringify(msg)+'\n');}

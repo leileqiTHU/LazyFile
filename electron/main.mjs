@@ -43,7 +43,7 @@ store=await new Store(dataDir).init();access=new Access(store);protocol=new Prot
 const runtime=runtimePaths({packaged:app.isPackaged,resources:process.resourcesPath,dataDir,settings:store.data.settings});
 // Existing installations keep their already downloaded models.
 if(!store.data.settings.modelsPath&&!process.env.LAZYFILE_MODELS_PATH&&dataDir.replaceAll('\\','/').toLowerCase()==='d:/apps/lazyfile/data'&&existsSync('D:/Caches/LazyFile/Models/embeddinggemma-2-Q8_0.gguf'))runtime.models='D:/Caches/LazyFile/Models';
-codex=new Codex({cwd:path.join(dataDir,'AgentWorkspace'),executable:runtime.codex});
+codex=new Codex({cwd:path.join(dataDir,'AgentWorkspace'),executable:runtime.codex,home:path.join(dataDir,'CodexHome')});
 engine=new DigUp({directory:path.join(dataDir,'SearchIndex'),executable:runtime.digup,models:runtime.models});
 engine.roots=roots();engine.on('state',s=>emit('engine',s));codex.on('event',e=>{if(e.method==='account/login/completed'||e.method==='account/updated')emit('account',e.params);});
 searchService=new Search(store,access,{directory:path.join(dataDir,'ScopedSearch'),executable:engine.executable,models:engine.models},o=>{const e=new DigUp(o);e.on('state',s=>{Object.assign(engine.state,s);emit('engine',engine.state);});return e;});

@@ -90,9 +90,9 @@ Only folders you explicitly authorize are available to the assistant. Sending on
 
 LazyFile **0.3 is an early preview** for 64-bit Windows 10/11. macOS is a target, but has not yet been validated on a Mac. The interface supports English and Simplified Chinese.
 
-[**Download the Windows installer**](https://github.com/leileqiTHU/LazyFile/releases/download/v0.3.0/LazyFile-0.3.0-windows-x64-setup.exe) · [Release notes and checksums](https://github.com/leileqiTHU/LazyFile/releases/tag/v0.3.0)
+[**Download the Windows installer**](https://github.com/leileqiTHU/LazyFile/releases/download/v0.3.1/LazyFile-0.3.1-windows-x64-setup.exe) · [Release notes and checksums](https://github.com/leileqiTHU/LazyFile/releases/tag/v0.3.1)
 
-The installer includes the search engine and Codex runtime. No separate tools, commands or manual model downloads are needed. Install for your Windows account, choose an installation folder, and launch LazyFile. This preview is not code-signed, so Windows may display an unknown-publisher warning.
+The installer includes the search engine and a private Codex app-server engine. Sign in with ChatGPT separately inside LazyFile; it does not reuse or modify your existing Codex configuration or login. Upgrading from 0.3.0 requires signing in again; your library stays intact. No separate tools, commands or manual model downloads are needed. Install for your Windows account, choose an installation folder, and launch LazyFile. This preview is not code-signed, so Windows may display an unknown-publisher warning.
 
 Once the app is running:
 
