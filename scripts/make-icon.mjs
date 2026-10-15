@@ -1,0 +1,7 @@
+import {createRequire} from 'node:module';
+import fs from 'node:fs/promises';
+const fromPdf=createRequire(import.meta.resolve('pdfjs-dist/package.json'));
+const {createCanvas}=fromPdf('@napi-rs/canvas');
+await fs.mkdir('build',{recursive:true});
+function draw(n){const c=createCanvas(n,n),x=c.getContext('2d');x.scale(n/256,n/256);const g=x.createLinearGradient(30,10,200,250);g.addColorStop(0,'#579aff');g.addColorStop(1,'#1255cd');x.fillStyle=g;x.beginPath();x.roundRect(8,8,240,240,54);x.fill();x.strokeStyle='white';x.lineWidth=10;x.lineJoin='round';x.beginPath();x.moveTo(56,86);x.lineTo(106,86);x.lineTo(122,102);x.lineTo(200,102);x.lineTo(200,188);x.quadraticCurveTo(200,202,186,202);x.lineTo(68,202);x.quadraticCurveTo(54,202,54,188);x.lineTo(54,100);x.quadraticCurveTo(54,86,56,86);x.stroke();x.fillStyle='white';const star=(cx,cy,r)=>{x.beginPath();x.moveTo(cx,cy-r);x.quadraticCurveTo(cx+r*.25,cy-r*.25,cx+r,cy);x.quadraticCurveTo(cx+r*.25,cy+r*.25,cx,cy+r);x.quadraticCurveTo(cx-r*.25,cy+r*.25,cx-r,cy);x.quadraticCurveTo(cx-r*.25,cy-r*.25,cx,cy-r);x.fill();};star(177,71,27);star(216,52,10);return c.toBuffer('image/png');}
+await fs.writeFile('build/icon.png',draw(512));const png=draw(256);const header=Buffer.alloc(22);header.writeUInt16LE(1,2);header.writeUInt16LE(1,4);header.writeUInt16LE(1,10);header.writeUInt16LE(32,12);header.writeUInt32LE(png.length,14);header.writeUInt32LE(22,18);await fs.writeFile('build/icon.ico',Buffer.concat([header,png]));

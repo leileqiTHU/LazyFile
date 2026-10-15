@@ -1,0 +1,20 @@
+node_modules/
+dist/
+release/
+.local/
+test-results/
+playwright-report/
+*.log
+
+release-v*/
+
+# Local agent preferences and machine-specific test reports
+AGENTS.md
+docs/validation*.md
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+docs/product-requirements.md
