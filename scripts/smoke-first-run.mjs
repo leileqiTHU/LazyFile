@@ -15,6 +15,10 @@ if(!path.basename(base).startsWith('lazyfile-first-run-'))throw new Error('Use a
 const files=path.join(base,'Demo files');await fs.mkdir(files,{recursive:true});
 await fs.writeFile(path.join(files,'journey.txt'),'A quiet cabin beside an alpine lake. Summer hiking in pine forests and mountain reflections at sunset.');
 await fs.writeFile(path.join(files,'invoice-2026-1042.txt'),'Invoice 2026-1042. Office furniture and chairs. Total $1,500.');
+// A representative mixed library is needed: DigUp's z-score gate rejects pure
+// semantic matches in a two-vector corpus (maximum z-score is 1).
+const distractors=['Database backups and SQL transactions.','Bread recipe with flour and yeast.','Payroll tax deductions and salaries.','Guitar chords and musical notation.','Basketball scores and team rankings.','Dental appointment and insurance claim.','CPU benchmark and memory timings.','Contract renewal and legal clauses.','Garden irrigation and tomato fertilizer.','Shipping labels and warehouse inventory.','Physics equations and electrical circuits.','Meeting minutes for product launch.','Car engine maintenance and oil changes.','Language grammar and vocabulary exercises.'];
+await Promise.all(distractors.map((text,i)=>fs.writeFile(path.join(files,'reference-'+i+'.txt'),text)));
 const data=path.join(base,'Data');const store=await new Store(data).init();store.data.settings.language='en';store.data.settings.setupComplete=false;store.data.files=[];store.data.observationRoots=[];await store.save();
 if(process.env.LAZYFILE_SEED_MODELS){
  // Reproduce an interrupted download without downloading the complete pair again.
@@ -34,8 +38,11 @@ try{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const setup=page.getByRole('dialog');await setup.getByRole('heading',{name:'Find your first file.'}).waitFor();
  assert.equal(await setup.getByRole('button',{name:'Start searching',exact:true}).isEnabled(),false);
- await page.waitForFunction(async()=>{const s=await window.lazyfile.state();return s.engine.downloading||s.engine.downloadError;},null,{timeout:30000});
- assert.equal((await page.evaluate(()=>window.lazyfile.state())).engine.downloading,true,'Automatic download did not start');
+ const cached=(await page.evaluate(()=>window.lazyfile.state())).engine.modelsReady;
+ if(!cached){
+  await page.waitForFunction(async()=>{const s=await window.lazyfile.state();return s.engine.downloading||s.engine.downloadError;},null,{timeout:30000});
+  assert.equal((await page.evaluate(()=>window.lazyfile.state())).engine.downloading,true,'Automatic download did not start');
+ }else console.log('Reusing models verified by the previous real download/resume run.');
  await setup.getByLabel('Language',{exact:true}).selectOption('zh');await setup.getByRole('heading',{name:'找到你的第一个文件。'}).waitFor();
  await setup.getByLabel('语言',{exact:true}).selectOption('en');
  await app.evaluate(({dialog},files)=>{dialog.showOpenDialog=async()=>({canceled:false,filePaths:[files]});},files);
@@ -52,9 +59,14 @@ try{
  }
  assert.ok(ready,'Model download timed out');
  await setup.getByRole('button',{name:'Start searching',exact:true}).click();await setup.waitFor({state:'hidden'});
- await page.waitForFunction(async()=>!(await window.lazyfile.state()).engine.indexing,null,{timeout:180000});
+
  console.log('First index: '+JSON.stringify(await page.evaluate(()=>window.lazyfile.engineStatus())));
  const exact=await page.evaluate(()=>window.lazyfile.search('2026-1042',false));assert.ok(exact.files.some(f=>f.name==='invoice-2026-1042.txt'));
+ for(let n=0;n<90;n++){
+  const r=await page.evaluate(()=>window.lazyfile.search('湖边木屋的夏日度假',true));
+  if(r.meaning&&r.files.some(f=>f.name==='journey.txt'))break;
+  await new Promise(r=>setTimeout(r,2000));
+ }
  const semantic=await page.evaluate(()=>window.lazyfile.search('湖边木屋的夏日度假',true));assert.equal(semantic.meaning,true);assert.ok(semantic.files.some(f=>f.name==='journey.txt'));
  assert.equal((await fs.readdir(files)).includes('.overview.md'),false);
  await page.getByRole('button',{name:'Quick Search',exact:false}).first().click();await page.locator('.search-input-row input').fill('湖边木屋的夏日度假');await page.getByRole('option',{name:/journey.txt/}).waitFor();await page.locator('.search-input-row .spin').waitFor({state:'hidden'});
@@ -62,5 +74,5 @@ try{
  await app.close();app=null;
  app=await electron.launch({executablePath:executable,args:[],env,timeout:60000});const reopened=await app.firstWindow();await reopened.locator('.file-row').first().waitFor();
  assert.equal(await reopened.locator('.setup-card').count(),0);assert.equal((await reopened.evaluate(()=>window.lazyfile.state())).settings.setupComplete,true);
- console.log(JSON.stringify({passed:true,base,automaticDownload:true,isolatedAccount:true,bilingualSetup:true,keyword:true,semantic:true,restart:true}));
+ console.log(JSON.stringify({passed:true,base,automaticDownload:!cached,isolatedAccount:true,bilingualSetup:true,keyword:true,semantic:true,restart:true}));
 }finally{await app?.close();}

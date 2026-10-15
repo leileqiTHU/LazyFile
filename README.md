@@ -21,6 +21,8 @@ Quick search combines local semantic and keyword retrieval, powered by [DigUp](h
 
 The assistant can move between search results, folder guides and file contents. It can narrow the search as it goes, rather than relying on a single query. Results link back to the actual files so you can preview, open or reveal them in their folder.
 
+For very small libraries, DigUp’s relevance threshold can omit purely semantic matches. Try exact words or the assistant’s folder browsing if no result appears.
+
 ## A tour of LazyFile
 
 These screenshots show the real desktop app with a separate demonstration library. The topics, summaries and assistant messages come from actual AI analysis of the sample files.
