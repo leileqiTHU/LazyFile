@@ -9,7 +9,7 @@ const base='D:/Caches/LazyFile/smoke-'+Date.now();const files=path.join(base,'Fi
 await fs.writeFile(path.join(files,'Autumn campaign.md'),'# Autumn campaign\nMarketing launch budget: $24,000. Launch channels: newsletters, partnerships, and a small launch event.');
 await fs.writeFile(path.join(files,'Mountain trip.txt'),'A quiet cabin beside an alpine lake. Hiking through pine forests and watching the mountain reflection at sunset.');
 await fs.writeFile(path.join(files,'invoice-2026-1042.txt'),'Invoice 2026-1042. Office supplies and stationery. Total $170.');
-const store=await new Store(path.join(base,'Data')).init();await ingest(store,[files]);store.data.observationRoots=[files];await store.save();
+const store=await new Store(path.join(base,'Data')).init();await ingest(store,[files]);store.data.observationRoots=[files];store.data.settings.setupComplete=true;await store.save();
 const workspace=path.join(base,'Workspace');await fs.mkdir(workspace);
 const env={...process.env,LAZYFILE_DATA_DIR:path.join(base,'Data')};delete env.ELECTRON_RUN_AS_NODE;
 const app=await electron.launch({...(process.env.LAZYFILE_TEST_EXECUTABLE?{executablePath:process.env.LAZYFILE_TEST_EXECUTABLE,args:[]}:{args:['.']}),env,timeout:60000});

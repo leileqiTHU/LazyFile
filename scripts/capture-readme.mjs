@@ -30,7 +30,7 @@ const docs={
  'Projects/Reading list.md':'# Reading list\nBooks about typography, architecture and photography.'
 };
 for(const [name,content]of Object.entries(docs))await fs.writeFile(path.join(root,name),content);
-store=await new Store(path.join(base,'Data')).init();store.data.settings.language='en';const access=new Access(store),protocol=new Protocol(store,access),workspace=new Workspace(store,access,protocol);await workspace.setWorkspace(root);
+store=await new Store(path.join(base,'Data')).init();store.data.settings.language='en';store.data.settings.setupComplete=true;const access=new Access(store),protocol=new Protocol(store,access),workspace=new Workspace(store,access,protocol);await workspace.setWorkspace(root);
 const observation=path.join(base,'Reference');await fs.mkdir(observation);
 await fs.writeFile(path.join(observation,'Conference checklist.md'),'# Conference checklist\nConfirm travel dates, bring presentation notes and keep receipts.');
 await workspace.observe([observation]);

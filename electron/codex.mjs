@@ -37,7 +37,7 @@ export class Codex extends EventEmitter {
     this.child.stderr.on('data',()=>{});
     createInterface({input:this.child.stdout}).on('line',line=>{try{this.receive(JSON.parse(line));}catch{}});
     this.child.on('error',e=>this.fail(e));this.child.on('exit',()=>{this.ready=null;this.fail(new Error('Codex disconnected. Reconnect in Settings.'));});
-    await this.request('initialize',{clientInfo:{name:'lazyfile',title:'LazyFile',version:'0.2.0'},capabilities:{experimentalApi:true}},30000);
+    await this.request('initialize',{clientInfo:{name:'lazyfile',title:'LazyFile',version:'0.3.0'},capabilities:{experimentalApi:true}},30000);
     this.send({method:'initialized',params:{}});
   }
   send(msg){this.child?.stdin.write(JSON.stringify(msg)+'\n');}

@@ -13,10 +13,10 @@ import {Access,protocolNames} from './access.mjs';
 import {Protocol} from './protocol.mjs';
 import {Workspace} from './workspace.mjs';
 import {Search} from './search.mjs';
+import {runtimePaths,dataDirectory} from './runtime.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
-const preferred=process.platform==='win32'&&existsSync('D:\\')?'D:\\Apps\\LazyFile\\Data':path.join(app.getPath('appData'),'LazyFile');
-const dataDir=process.env.LAZYFILE_DATA_DIR||preferred;await fs.mkdir(dataDir,{recursive:true});app.setPath('userData',dataDir);app.setPath('sessionData',path.join(dataDir,'Browser'));
+const dataDir=dataDirectory({appData:app.getPath('appData')});await fs.mkdir(dataDir,{recursive:true});app.setPath('userData',dataDir);app.setPath('sessionData',path.join(dataDir,'Browser'));
 if(!app.requestSingleInstanceLock())app.quit();
 let win,store,codex,ai,engine,watcher,access,protocol,workspace,searchService;let importChain=Promise.resolve();let chatBusy=false;
 const emit=(name,data)=>{if(win&&!win.isDestroyed())win.webContents.send('lazyfile:'+name,data);};
@@ -39,9 +39,12 @@ async function importPaths(paths,folder=false){
   importChain=importChain.catch(()=>{}).then(task);return importChain;
 }
 app.whenReady().then(async()=>{
-store=await new Store(dataDir).init();access=new Access(store);protocol=new Protocol(store,access);workspace=new Workspace(store,access,protocol);await recoverMoves(store);await workspace.refresh();codex=new Codex({cwd:path.join(dataDir,'AgentWorkspace'),executable:store.data.settings.codexPath});
-const bundled=path.join(process.resourcesPath,'digup',process.platform==='win32'?'digup.exe':'digup');
-engine=new DigUp({directory:path.join(dataDir,'SearchIndex'),executable:store.data.settings.digupPath||process.env.LAZYFILE_DIGUP_PATH||(existsSync(bundled)?bundled:process.platform==='win32'?'D:\\Apps\\LazyFileRuntime\\DigUp\\helper\\digup.exe':'/Applications/DigUp.app/Contents/Helpers/digup'),models:store.data.settings.modelsPath||process.env.LAZYFILE_MODELS_PATH||path.join(process.platform==='win32'&&existsSync('D:\\')?'D:\\Caches\\LazyFile':dataDir,'Models')});
+store=await new Store(dataDir).init();access=new Access(store);protocol=new Protocol(store,access);workspace=new Workspace(store,access,protocol);await recoverMoves(store);await workspace.refresh();
+const runtime=runtimePaths({packaged:app.isPackaged,resources:process.resourcesPath,dataDir,settings:store.data.settings});
+// Existing installations keep their already downloaded models.
+if(!store.data.settings.modelsPath&&!process.env.LAZYFILE_MODELS_PATH&&dataDir.replaceAll('\\','/').toLowerCase()==='d:/apps/lazyfile/data'&&existsSync('D:/Caches/LazyFile/Models/embeddinggemma-2-Q8_0.gguf'))runtime.models='D:/Caches/LazyFile/Models';
+codex=new Codex({cwd:path.join(dataDir,'AgentWorkspace'),executable:runtime.codex});
+engine=new DigUp({directory:path.join(dataDir,'SearchIndex'),executable:runtime.digup,models:runtime.models});
 engine.roots=roots();engine.on('state',s=>emit('engine',s));codex.on('event',e=>{if(e.method==='account/login/completed'||e.method==='account/updated')emit('account',e.params);});
 searchService=new Search(store,access,{directory:path.join(dataDir,'ScopedSearch'),executable:engine.executable,models:engine.models},o=>{const e=new DigUp(o);e.on('state',s=>{Object.assign(engine.state,s);emit('engine',engine.state);});return e;});
 ai=new Intelligence(store,codex,(name,data)=>name==='state'?notify():emit(name,data),{workspace,search:searchService});
@@ -66,7 +69,9 @@ handle('login',async()=>{const r=await codex.login();if(r.authUrl){const url=new
 handle('models',()=>codex.models());
 handle('search',(q,semantic=true,scope={})=>searchService.search(q,semantic,scope));
 handle('engineStatus',async()=>roots().length?(await searchService.engineFor(roots())).status():engine.available().then(()=>engine.state));
-handle('downloadModels',async()=>{await engine.downloadModels();await searchService.refresh();notify();});
+async function prepareSearch(){await engine.downloadModels();await searchService.refresh();notify();}
+handle('downloadModels',prepareSearch);
+handle('completeSetup',async()=>{await engine.available();if(!engine.state.modelsReady||!roots().length)throw new Error('Finish model preparation and choose a folder first.');store.data.settings.setupComplete=true;await store.save();notify();});
 handle('reindex',async()=>{if(ai.busy||chatBusy)throw new Error('Agent is busy.');await workspace.refresh();await searchService.refresh();notify();});
 handle('analyze',async ids=>{if(chatBusy)throw new Error('A conversation is running. Finish or stop it first.');if(!Array.isArray(ids)||ids.length>5000||ids.some(id=>!store.data.files.some(f=>f.id===id)))throw new Error('Invalid file selection');ai.enqueue(ids);return true;});
 handle('chat',async(text,id)=>{if(ai.busy||chatBusy)throw new Error('AI is already working. Finish or pause it first.');chatBusy=true;try{const r=await ai.chat(text,id);await workspace.refresh();await searchService.refresh();notify();return r;}finally{chatBusy=false;}});
@@ -83,4 +88,5 @@ const shortcutOk=globalShortcut.register('CommandOrControl+Shift+Space',()=>{win
 app.on('second-instance',()=>{win.show();win.focus();});
 app.on('window-all-closed',()=>app.quit());app.on('will-quit',()=>{globalShortcut.unregisterAll();clearTimeout(watchTimer);codex.close();engine.close();searchService.close();watcher?.close();});
 await engine.available();await watch();if(roots().length)await searchService.engineFor(roots());notify();
+if((app.isPackaged||process.env.LAZYFILE_AUTO_SETUP==='1')&&!engine.state.modelsReady)prepareSearch().catch(e=>{engine.state.downloadError=e.message;emit('engine',engine.state);});
 }).catch(error=>{console.error(error);dialog.showErrorBox('LazyFile could not start',error.message);app.quit();});

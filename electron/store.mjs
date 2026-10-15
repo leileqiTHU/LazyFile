@@ -9,7 +9,7 @@ export class Store {
     await fs.mkdir(this.dir,{recursive:true});
     try { this.data=JSON.parse(await fs.readFile(this.file,'utf8')); }
     catch(e) { if(e.code!=='ENOENT') throw new Error('Library could not be read. Preserve library.json and restore its backup.');
-      this.data={version:2,files:[],observationRoots:[],activity:[],messages:[],settings:{language:'zh',autoFile:true,workspaceRoot:'',model:'',codexPath:''}};
+      this.data={version:2,files:[],observationRoots:[],activity:[],messages:[],settings:{language:'zh',autoFile:true,workspaceRoot:'',model:'',codexPath:'',setupComplete:false}};
     }
     if(this.data.version!==2){
       await fs.writeFile(path.join(this.dir,'library-v1-backup-'+Date.now()+'.json'),JSON.stringify(this.data),{flag:'wx'});

@@ -86,16 +86,20 @@ Only folders you explicitly authorize are available to the assistant. Sending on
 
 ## Get started
 
-LazyFile **0.2 is an early preview**. Windows has been tested; macOS is a target, but has not yet been validated on a Mac. The interface supports English and Simplified Chinese.
+LazyFile **0.3 is an early preview** for 64-bit Windows 10/11. macOS is a target, but has not yet been validated on a Mac. The interface supports English and Simplified Chinese.
 
-Packaged downloads have not been published to this repository yet. To run the preview from source, follow the [development guide](docs/development.md).
+[**Download the Windows installer**](https://github.com/leileqiTHU/LazyFile/releases/download/v0.3.0/LazyFile-0.3.0-windows-x64-setup.exe) · [Release notes and checksums](https://github.com/leileqiTHU/LazyFile/releases/tag/v0.3.0)
+
+The installer includes the search engine and Codex runtime. No separate tools, commands or manual model downloads are needed. Install for your Windows account, choose an installation folder, and launch LazyFile. This preview is not code-signed, so Windows may display an unknown-publisher warning.
 
 Once the app is running:
 
-1. **Choose your folders.** Add observation folders for search, and optionally select a workspace for files you want LazyFile to organize.
-2. **Set up local search.** Use Settings to download the models, about 865 MB once. Let the initial index finish; a newly selected search scope may need its own indexing pass.
+1. **Follow the welcome guide.** LazyFile automatically downloads and verifies the local search models (about 865 MB, once). Keep the app open and connected to the internet; if interrupted, use Retry to resume.
+2. **Choose your folders.** While the models download, add observation folders for search, and optionally select a workspace for files you want LazyFile to organize. Let the initial index finish; a newly selected search scope may need its own indexing pass.
 3. **Start searching.** Type a description, filename or exact phrase. Select a result to see its preview.
-4. **Connect the assistant when you need it.** Install Codex CLI, then use Settings to check your existing login or sign in with ChatGPT. Ask it to find a file, verify a detail, or organize a file you send.
+4. **Connect the assistant when you need it.** Sign in with ChatGPT in the guide or Settings. This step is optional for local search. Ask it to find a file, verify a detail, or organize a file you send.
+
+You can reopen the welcome guide from Settings. After model preparation, local search works offline. To run from source instead, see the [development guide](docs/development.md).
 
 | Windows shortcut | Action |
 | --- | --- |
