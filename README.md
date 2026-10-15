@@ -1,10 +1,12 @@
-# LazyFile
+# LazyFile — Local Semantic Search & AI File Finder
 
 **Find the file you remember, even when you forget its name.**
 
-LazyFile is a focused desktop tool for finding files. Describe what you need, search by an exact phrase, or ask an assistant to look through your folders and check the contents.
+LazyFile is an open-source file finder for Windows, combining local semantic search, keyword search and an optional AI file assistant. Describe what you need, search by an exact phrase, or ask an assistant to look through your folders and check the contents.
 
 English · [简体中文](README.zh-CN.md)
+
+[**Product website**](https://leileqiTHU.github.io/LazyFile/) · [FAQ](https://leileqiTHU.github.io/LazyFile/#faq) · [Download Windows preview](https://github.com/leileqiTHU/LazyFile/releases/tag/v0.3.1)
 
 ![LazyFile quick search showing a budget document and its contents](docs/assets/lazyfile-search.png)
 

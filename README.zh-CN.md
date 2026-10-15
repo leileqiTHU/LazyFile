@@ -1,10 +1,12 @@
-# LazyFile
+# LazyFile — 本地语义搜索与 AI 文件查找助手
 
 **记得内容，忘了文件名？也能找回来。**
 
-LazyFile 是一个专注文件查找的桌面工具。描述你想找的内容、输入准确的关键词，或者让智能助手浏览文件夹、阅读文件，帮你确认结果。
+LazyFile 是面向 Windows 的开源文件查找工具，结合本地语义搜索、关键词检索与可选 AI 文件助手。描述你想找的内容、输入准确的关键词，或者让智能助手浏览文件夹、阅读文件，帮你确认结果。
 
 [English](README.md) · 简体中文
+
+[**产品官网**](https://leileqiTHU.github.io/LazyFile/zh/) · [常见问题](https://leileqiTHU.github.io/LazyFile/zh/#faq) · [下载 Windows 预览版](https://github.com/leileqiTHU/LazyFile/releases/tag/v0.3.1)
 
 ![LazyFile 快捷搜索展示预算文件及其内容](docs/assets/lazyfile-search.png)
 
