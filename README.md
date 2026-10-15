@@ -21,6 +21,44 @@ Quick search combines local semantic and keyword retrieval, powered by [DigUp](h
 
 The assistant can move between search results, folder guides and file contents. It can narrow the search as it goes, rather than relying on a single query. Results link back to the actual files so you can preview, open or reveal them in their folder.
 
+## A tour of LazyFile
+
+These screenshots show the real desktop app with a separate demonstration library. The assistant is on its welcome screen, and Collections shows its initial state before AI analysis.
+
+### Files — browse your library
+
+View workspace files and read-only observation files together, or filter by source and file type. Switch between list and grid views, filter the file list, and select a file to inspect its location, analysis status and available AI notes. Open it, reveal it in its folder, or ask the assistant about it from the details panel.
+
+![Files page with a selected budget document and its details](docs/assets/lazyfile-files.png)
+
+### Agent Chat — ask for help finding a file
+
+Describe what you remember or ask a question about a selected file. The assistant can combine search, folder browsing and reading to check the answer. Send files into the workspace from the attachment controls; the sidebar shows library status, observation folders and the optional autonomous organization setting.
+
+![Agent Chat welcome screen with file attachments and library overview](docs/assets/lazyfile-assistant.png)
+
+### Recent Activity — see what happened
+
+Review imports, file understanding and workspace operations in one timeline. Eligible workspace moves and folder creations have an undo action; undo still checks for changed files and conflicting destinations. The example below records a real copy of a demonstration file into the workspace.
+
+![Recent Activity showing the receipt of a demo file and creation of its inbox](docs/assets/lazyfile-activity.png)
+
+### Collections — browse by topic
+
+After AI understanding assigns topics, files with the same topic appear together in a collection. Open a collection to browse its files. Collections are a view of file metadata, so viewing one does not move files. Until files have been analyzed, this page shows the starting prompt below.
+
+![Collections initial state before files have been analyzed](docs/assets/lazyfile-collections.png)
+
+### Settings — choose connections and folder access
+
+Switch between English and Simplified Chinese, connect your ChatGPT account, choose an AI model, and check or configure the local DigUp search engine. Model download and index refresh controls are here too.
+
+![Settings with language, AI connection and local search controls](docs/assets/lazyfile-settings.png)
+
+Further down, choose the single writable workspace, add or remove read-only observation folders, toggle autonomous organization, and repair workspace folder guides. Advanced storage shows where LazyFile keeps its own settings, history and indexes; it is separate from your workspace.
+
+![Settings folder permissions and expanded application data location](docs/assets/lazyfile-settings-folders.png)
+
 ## Your folders, your boundaries
 
 LazyFile works with two kinds of folders:
